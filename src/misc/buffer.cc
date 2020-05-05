@@ -39,7 +39,7 @@ namespace misc
         }
     }
 
-    size_t Buffer::receive(http::Socket& socket)
+    size_t Buffer::receive(paxos::Socket& socket)
     {
         char buf[BUFF_SIZE];
         ssize_t n = socket.recv(buf, BUFF_SIZE);

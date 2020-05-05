@@ -54,7 +54,8 @@ MISC = \
        src/misc/sys-wrapper.hh \
        src/misc/unistd.hh \
        src/misc/logger.cc \
-       src/misc/logger.hh
+       src/misc/logger.hh \
+       src/misc/buffer.cc
 
 EVENTS = \
           src/events/event-loop.hh \
@@ -69,17 +70,7 @@ EVENTS = \
           src/events/receive.hh \
           src/events/receive.cc \
           src/events/send.hh \
-          src/events/send.cc \
-          src/events/send-file.hh \
-          src/events/send-file.cc \
-          src/events/send-request.hh \
-          src/events/send-request.cc \
-          src/events/receive-response.hh \
-          src/events/receive-response.cc \
-          src/events/file-sender.hh \
-          src/events/file-sender.cc \
-          src/events/reverse-proxy.cc \
-          src/events/reverse-proxy.hh
+          src/events/send.cc
 
 LEGISLATOR = \
            src/legislator/legislator.cc \
@@ -88,10 +79,12 @@ LEGISLATOR = \
 SOCKET = \
          src/socket/default-socket.cc \
          src/socket/default-socket.hh \
+         src/connection/connection.cc \
          src/socket/socket.hh 
 
 SOURCES = \
           $(CONFIG) \
+          $(EVENTS) \
           $(LEGISLATOR) \
           $(MISC) \
           $(SOCKET) \

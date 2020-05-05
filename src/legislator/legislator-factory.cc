@@ -3,6 +3,8 @@
 #include "legislator-factory.hh"
 #include "socket/default-socket.hh"
 #include "misc/addrinfo/addrinfo.hh"
+#include "events/register.hh"
+#include "events/listener.hh"
 
 namespace paxos
 {
@@ -67,6 +69,7 @@ namespace paxos
         if (config.is_self)
         {
             shared_socket socket = prepare_socket(config);
+            event_register.register_event<ListenerEW>(socket);
         }
         return shared;
     }

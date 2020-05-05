@@ -2,7 +2,9 @@
 
 #include "config/config.hh"
 #include "legislator/legislator-factory.hh"
+#include "events/register.hh"
 
+paxos::EventWatcherRegistry paxos::event_register;
 
 int main(int, char **argv)
 {

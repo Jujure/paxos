@@ -26,7 +26,7 @@ namespace misc
         ** \brief Call the socket recv method and append to the buffer
         ** \param socket The default socket
         */
-        size_t receive(http::Socket& socket);
+        size_t receive(paxos::Socket& socket);
 
         /**
         ** \brief Pop the string in front of data_ and returns it.
