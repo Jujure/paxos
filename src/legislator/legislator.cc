@@ -57,7 +57,21 @@ namespace paxos
         ledger.set_next_bal(ballot);
         int previous_vote = ledger.prev_vote();
         previous_vote = previous_vote;
-        //XXX send a LastVote to sender
+        send_last_vote(ballot, previous_vote, sender);
+    }
+
+    void Legislator::send_last_vote(int ballot, int previous_vote,
+            std::string sender)
+    {
+        std::string ballot_string = std::to_string(ballot);
+        std::string vote_string = std::to_string(previous_vote);
+        Message message;
+        message.set_method("LastVote");
+        message.add_header("ballot", ballot_string);
+        message.add_header("vote", vote_string);
+        message.add_header("sender", self->config_.name);
+        SendEW::send_message(message, legislators[sender]);
+
     }
 
     void Legislator::receive_last_vote(Message message)
