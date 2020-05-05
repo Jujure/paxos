@@ -4,6 +4,8 @@
 
 #include "events/events.hh"
 #include "connection/connection.hh"
+#include "message/message.hh"
+#include "legislator/legislator.hh"
 
 namespace paxos
 {
@@ -23,6 +25,8 @@ namespace paxos
          * \brief Read on socket.
          */
         void operator()() final;
+
+        static void send_message(Message message, shared_legislator legislator);
 
     private:
         shared_connection connection_;

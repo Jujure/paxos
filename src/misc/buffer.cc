@@ -44,7 +44,7 @@ namespace misc
         char buf[BUFF_SIZE];
         ssize_t n = socket.recv(buf, BUFF_SIZE);
         if (n == 0)
-            throw http::ConnectionRecvClosedError();
+            throw paxos::ConnectionRecvClosedError();
         if (n == -1)
             return 0;
 

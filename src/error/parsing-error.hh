@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace http
+namespace paxos
 {
     struct ParsingError : public std::logic_error
     {

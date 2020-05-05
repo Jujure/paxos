@@ -1,6 +1,10 @@
+#include <string>
+
 #include "legislator.hh"
 #include "misc/logger.hh"
-#include <string>
+#include "message/message.hh"
+#include "events/register.hh"
+#include "events/send.hh"
 
 namespace paxos
 {
@@ -20,8 +24,13 @@ namespace paxos
 
     void Legislator::send_next_ballot(int ballot)
     {
-        ballot = ballot;
-        return;
+        std::string ballot_string = std::to_string(ballot);
+        Message message;
+        message.set_method("NextBallot");
+        message.add_header("ballot", ballot_string);
+
+        for (auto legislator : legislators)
+            SendEW::send_message(message, legislator.second);
     }
 
     void Legislator::receive_next_ballot(int ballot, std::string sender)

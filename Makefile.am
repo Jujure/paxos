@@ -57,6 +57,9 @@ MISC = \
        src/misc/logger.hh \
        src/misc/buffer.cc
 
+MESSAGE = \
+          src/message/message.cc
+
 EVENTS = \
           src/events/event-loop.hh \
           src/events/event-loop.cc \
@@ -87,6 +90,7 @@ SOURCES = \
           $(CONFIG) \
           $(EVENTS) \
           $(LEGISLATOR) \
+          $(MESSAGE) \
           $(MISC) \
           $(SOCKET) \
           $(SCHEDULER) \

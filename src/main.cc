@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <unordered_map>
 
 #include "config/config.hh"
 #include "legislator/legislator-factory.hh"
@@ -7,7 +7,7 @@
 #include "misc/logger.hh"
 
 paxos::EventWatcherRegistry paxos::event_register;
-std::vector<paxos::shared_legislator> paxos::legislators;
+std::unordered_map<std::string, paxos::shared_legislator> paxos::legislators;
 paxos::shared_legislator paxos::self;
 
 ev_signal sigint_watcher;
@@ -38,7 +38,7 @@ int main(int, char **argv)
 
     for (auto config : server_config.legislators_)
     {
-        paxos::legislators.push_back(paxos::LegislatorFactory::Create(config));
+        paxos::legislators.insert(std::pair(config.name, paxos::LegislatorFactory::Create(config)));
     }
     
     paxos::event_register.get_event_loop()();

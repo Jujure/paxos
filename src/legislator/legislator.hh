@@ -27,5 +27,5 @@ namespace paxos
     using shared_legislator = std::shared_ptr<Legislator>;
 
     extern shared_legislator self;
-    extern std::vector<shared_legislator> legislators;
+    extern std::unordered_map<std::string, shared_legislator> legislators;
 }

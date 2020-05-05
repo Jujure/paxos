@@ -4,7 +4,7 @@
 #include <string>
 #include <system_error>
 
-namespace http
+namespace paxos
 {
     struct ConnectionRecvClosedError: public std::system_error
     {
