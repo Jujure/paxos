@@ -26,7 +26,6 @@ namespace paxos
         auto buffer = connection_->get_buffer_out();
         std::string response = buffer.to_string();
 
-        log("Sending a message: ", blue);
         log(response, white);
         ssize_t write = 0;
         try
@@ -81,6 +80,7 @@ namespace paxos
     {
         std::string ip = legislator->config_.ip;
         std::string port = legislator->config_.port;
+        std::string name = legislator->config_.name;
         shared_socket socket;
         try
         {
@@ -88,7 +88,7 @@ namespace paxos
         }
         catch (const ConnectionFailed& e)
         {
-            log("Could not connect to " + legislator->config_.name, red);
+            log("Could not connect to " + name, red);
             return;
         }
 
@@ -96,5 +96,6 @@ namespace paxos
         message.fill_buffer(connection->get_buffer_out());
 
         event_register.register_event<SendEW>(connection);
+        log("Sending a message to " + name + ": ", blue);
     }
 }

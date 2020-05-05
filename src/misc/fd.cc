@@ -20,7 +20,6 @@ namespace misc
         if (*this)
         {
             sys::close(fd_);
-            std::cerr << "Closed " << fd_ << "\n";
         }
     }
 

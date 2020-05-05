@@ -20,7 +20,7 @@ namespace paxos
         quorum_previous_votes.clear();
         int new_ballot_number = ledger.last_tried() + 1;
         ledger.set_last_tried(new_ballot_number);
-        log(config_.name + " is initiating ballot " + std::to_string(new_ballot_number), cyan);
+        log(config_.name + " is initiating ballot " + std::to_string(new_ballot_number), green);
         send_next_ballot(new_ballot_number);
     }
 
@@ -47,7 +47,7 @@ namespace paxos
     {
         log(config_.name + " has received a NextBallot("
                 + std::to_string(ballot)
-                + ") from " + sender, cyan);
+                + ") from " + sender, green);
         int next_ballot = ledger.next_bal();
         if (ballot <= next_ballot)
         {
@@ -86,7 +86,7 @@ namespace paxos
         std::string sender =  *message.get_header("sender");
         log(config_.name + " has received a LastVote("
                 + ballot_str + ", " + vote_ballot_id_str
-                + ") from " + sender, cyan);
+                + ") from " + sender, green);
         int ballot = std::stoi(ballot_str);
         int vote_ballot_id = std::stoi(vote_ballot_id_str);
         int vote_decree = std::stoi(*message.get_header("decree"));
@@ -205,7 +205,7 @@ namespace paxos
 
         log(config_.name + " has received Voted("
                 + ballot_str
-                + ") from " + sender, cyan);
+                + ") from " + sender, green);
 
         receive_voted(std::stoi(ballot_str), decree, sender);
     }

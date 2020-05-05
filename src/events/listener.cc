@@ -27,8 +27,6 @@ namespace paxos
 
             client_socket->fcntl_set_O_NONBLOCK();
 
-            std::cout << "Listener: accepting client ... on " <<  getpid() << "\n";
-
             /* Register client_socket */
             auto e = event_register.register_event<RecvEW>(client_socket);
         }

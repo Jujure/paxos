@@ -34,10 +34,6 @@ namespace paxos
         auto origin_ip = connection_->get_origin_ip();
         auto origin_port = connection_->get_origin_port();
 
-        std::cerr << "Ready to recv data on " << origin_ip << ":"
-            << origin_port << " fd: " << sock->fd_get()->fd_ << "\n";
-        std::cout << "RECV on pid " << getpid() << "\n";
-
         auto buf_in = connection_->get_buffer_in();
         /* Add try catch to handle session */
         try
