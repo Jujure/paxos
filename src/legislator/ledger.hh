@@ -12,7 +12,8 @@ namespace paxos
     public:
         Ledger(std::string path);
 
-        std::vector<Decree> get_decrees();
+        Decree get_decree();
+        void set_decree(Decree decree);
 
         int last_tried();
         void set_last_tried(int b);

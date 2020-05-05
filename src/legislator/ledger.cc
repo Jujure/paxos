@@ -12,9 +12,16 @@ namespace paxos
         base_path_ += "/";
     }
 
-    std::vector<Decree> Ledger::get_decrees()
+    Decree Ledger::get_decree()
     {
-        return std::vector<Decree>();
+        Decree decree;
+        decree.decree = read_file(base_path_ + "decree.txt");
+        return decree;
+    }
+
+    void Ledger::set_decree(Decree decree)
+    {
+        write_file(base_path_ + "decree.txt", decree.decree);
     }
 
     int Ledger::last_tried()

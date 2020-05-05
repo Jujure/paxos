@@ -29,7 +29,12 @@ namespace paxos
         void receive_begin_ballot(Message message);
         void receive_begin_ballot(int ballot, int decree, std::string sender);
 
-        void send_voted(int ballot, std::string receiver);
+        void send_voted(int ballot, Decree decree, std::string receiver);
+        void receive_voted(Message message);
+        void receive_voted(int ballot, Decree decree, std::string voter);
+        void receive_enough_voted(int ballot, Decree decree);
+
+        void send_success(Decree decree);
 
         void handle_message(Message message);
 

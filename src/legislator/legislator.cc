@@ -182,16 +182,60 @@ namespace paxos
         vote.decree = decree;
         ledger.set_prev_vote(vote);
 
-        send_voted(ballot, sender);
+        send_voted(ballot, decree, sender);
     }
 
-    void Legislator::send_voted(int ballot, std::string receiver)
+    void Legislator::send_voted(int ballot, Decree decree, std::string receiver)
     {
         Message message;
         message.set_method("Voted");
         message.add_header("ballot", std::to_string(ballot));
         message.add_header("sender", self->config_.name);
+        message.add_header("decree", std::to_string(decree.decree));
         SendEW::send_message(message, legislators[receiver]);
+    }
+
+    void Legislator::receive_voted(Message message)
+    {
+        std::string ballot_str = *message.get_header("ballot");
+        std::string sender = *message.get_header("sender");
+        std::string decree_str = *message.get_header("decree");
+        Decree decree;
+        decree.decree = std::stoi(decree_str);
+
+        log(config_.name + " has received Voted("
+                + ballot_str
+                + ") from " + sender, cyan);
+
+        receive_voted(std::stoi(ballot_str), decree, sender);
+    }
+
+    void Legislator::receive_voted(int ballot, Decree decree, std::string voter)
+    {
+        if (ballot != ledger.last_tried())
+            return;
+        quorum_previous_votes.erase(voter);
+        if (quorum_previous_votes.size() == 0)
+            receive_enough_voted(ballot, decree);
+    }
+
+    void Legislator::receive_enough_voted(int ballot, Decree decree)
+    {
+        log(config_.name + " has received enough Voted("
+                + std::to_string(ballot)
+                + "), saving decree: " + std::to_string(decree.decree), green);
+        ledger.set_decree(decree);
+        send_success(decree);
+    }
+
+    void Legislator::send_success(Decree decree)
+    {
+        Message message;
+        message.set_method("Success");
+        message.add_header("decree", std::to_string(decree.decree));
+
+        for (auto legislator : legislators)
+            SendEW::send_message(message, legislator.second);
     }
 
     void Legislator::handle_message(Message message)
@@ -203,5 +247,7 @@ namespace paxos
             receive_last_vote(message);
         else if (method == "BeginBallot")
             receive_begin_ballot(message);
+        else if (method == "Voted")
+            receive_voted(message);
     }
 }
