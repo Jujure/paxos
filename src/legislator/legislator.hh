@@ -3,6 +3,7 @@
 #include "ledger.hh"
 #include "message/message.hh"
 #include "vote.hh"
+#include "law/decree.hh"
 #include <unordered_map>
 #include <unordered_set>
 
@@ -24,7 +25,9 @@ namespace paxos
         void receive_last_vote(Message message);
         void receive_enough_last_vote();
 
-        void receive_begin_ballot(int ballot, int decree);
+        void send_begin_ballot(int ballot, Decree decree);
+        void receive_begin_ballot(Message message);
+        void receive_begin_ballot(int ballot, int decree, std::string sender);
 
         void handle_message(Message message);
 
