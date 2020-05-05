@@ -82,7 +82,7 @@ namespace paxos
     void Legislator::receive_last_vote(Message message)
     {
         std::string ballot_str = *message.get_header("ballot");
-        std::string vote_ballot_id_str = *message.get_header("vote");
+        std::string vote_ballot_id_str = *message.get_header("vote_ballot_id");
         std::string sender =  *message.get_header("sender");
         log(config_.name + " has received a LastVote("
                 + ballot_str + ", " + vote_ballot_id_str
