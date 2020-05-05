@@ -1,6 +1,7 @@
 #pragma once
 #include "config/config.hh"
 #include "ledger.hh"
+#include "message/message.hh"
 #include <unordered_map>
 
 namespace paxos
@@ -15,12 +16,16 @@ namespace paxos
 
         void send_next_ballot(int ballot);
 
+        void receive_next_ballot(Message message);
         void receive_next_ballot(int ballot, std::string sender);
 
+        void receive_last_vote(Message message);
         void receive_enough_last_vote
             (std::unordered_map<std::string, int> quorum_last_votes);
 
         void receive_begin_ballot(int ballot, int decree);
+
+        void handle_message(Message message);
 
         Ledger ledger;
     };

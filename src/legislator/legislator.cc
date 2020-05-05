@@ -33,6 +33,12 @@ namespace paxos
             SendEW::send_message(message, legislator.second);
     }
 
+    void Legislator::receive_next_ballot(Message message)
+    {
+        message = message;
+        log("received NextBallot", green);
+    }
+
     void Legislator::receive_next_ballot(int ballot, std::string sender)
     {
         log(config_.name + " has received a NextBallot("
@@ -52,6 +58,11 @@ namespace paxos
         //XXX send a LastVote to sender
     }
 
+    void Legislator::receive_last_vote(Message message)
+    {
+        message = message;
+    }
+
     void Legislator::receive_enough_last_vote
         (std::unordered_map<std::string, int> quorum_last_votes)
     {
@@ -68,5 +79,14 @@ namespace paxos
 
         decree = decree;
         //XXX send Voted
+    }
+
+    void Legislator::handle_message(Message message)
+    {
+        std::string method = message.get_method();
+        if (method == "NextBallot")
+            receive_next_ballot(message);
+        else if (method == "LastVote")
+            receive_last_vote(message);
     }
 }
