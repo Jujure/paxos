@@ -238,6 +238,21 @@ namespace paxos
             SendEW::send_message(message, legislator.second);
     }
 
+    void Legislator::receive_success(Message message)
+    {
+        std::string decree_str = *message.get_header("decree");
+        Decree decree;
+        decree.decree = std::stoi(decree_str);
+        receive_success(decree);
+    }
+
+    void Legislator::receive_success(Decree decree)
+    {
+        ledger.set_decree(decree);
+        std::string new_decree= std::to_string(ledger.get_decree().decree);
+        log("Received success, the new decree is now: " + new_decree, green);
+    }
+
     void Legislator::handle_message(Message message)
     {
         std::string method = message.get_method();
@@ -249,5 +264,7 @@ namespace paxos
             receive_begin_ballot(message);
         else if (method == "Voted")
             receive_voted(message);
+        else if (method == "Success")
+            receive_success(message);
     }
 }

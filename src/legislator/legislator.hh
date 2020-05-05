@@ -35,6 +35,8 @@ namespace paxos
         void receive_enough_voted(int ballot, Decree decree);
 
         void send_success(Decree decree);
+        void receive_success(Message message);
+        void receive_success(Decree decree);
 
         void handle_message(Message message);
 
