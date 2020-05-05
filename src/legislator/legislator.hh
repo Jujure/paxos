@@ -1,12 +1,14 @@
 #pragma once
-#include "legislator-config.hh"
+#include "config/config.hh"
 
 namespace paxos
 {
     class Legislator
     {
     public:
-        LegislatorConfig config;
+        Legislator(const LegislatorConfig& config);
+        LegislatorConfig config_;
 
-    }
+    };
+    using shared_legislator = std::shared_ptr<Legislator>;
 }

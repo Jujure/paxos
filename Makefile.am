@@ -81,6 +81,10 @@ EVENTS = \
           src/events/reverse-proxy.cc \
           src/events/reverse-proxy.hh
 
+LEGISLATOR = \
+           src/legislator/legislator.cc \
+           src/legislator/legislator-factory.cc
+
 SOCKET = \
          src/socket/default-socket.cc \
          src/socket/default-socket.hh \
@@ -88,6 +92,7 @@ SOCKET = \
 
 SOURCES = \
           $(CONFIG) \
+          $(LEGISLATOR) \
           $(MISC) \
           $(SOCKET) \
           $(SCHEDULER) \
