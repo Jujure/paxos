@@ -1,0 +1,22 @@
+{
+    "legislators" : [
+        {
+            "ip" : "127.0.0.1",
+            "port" : 8000,
+            "name" : "legislator1",
+            "self" : true
+        },
+        {
+            "ip" : "127.0.0.1",
+            "port" : 8001,
+            "name" : "legislator2",
+            "self" : false
+        },
+        {
+            "ip" : "127.0.0.1",
+            "port" : 8002,
+            "name" : "legislator3",
+            "self" : false
+        }
+    ]
+}

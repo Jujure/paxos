@@ -28,6 +28,7 @@ namespace paxos
         Message message;
         message.set_method("NextBallot");
         message.add_header("ballot", ballot_string);
+        message.add_header("sender", self->config_.name);
 
         for (auto legislator : legislators)
             SendEW::send_message(message, legislator.second);
@@ -35,8 +36,9 @@ namespace paxos
 
     void Legislator::receive_next_ballot(Message message)
     {
-        message = message;
-        log("received NextBallot", green);
+        std::string ballot_str = *message.get_header("ballot");
+        int ballot = std::stoi(ballot_str);
+        receive_next_ballot(ballot, *message.get_header("sender"));
     }
 
     void Legislator::receive_next_ballot(int ballot, std::string sender)
