@@ -29,6 +29,8 @@ namespace paxos
         void receive_begin_ballot(Message message);
         void receive_begin_ballot(int ballot, int decree, std::string sender);
 
+        void send_voted(int ballot, std::string receiver);
+
         void handle_message(Message message);
 
         Ledger ledger;

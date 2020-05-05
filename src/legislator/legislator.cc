@@ -182,7 +182,16 @@ namespace paxos
         vote.decree = decree;
         ledger.set_prev_vote(vote);
 
-        sender = sender;
+        send_voted(ballot, sender);
+    }
+
+    void Legislator::send_voted(int ballot, std::string receiver)
+    {
+        Message message;
+        message.set_method("Voted");
+        message.add_header("ballot", std::to_string(ballot));
+        message.add_header("sender", self->config_.name);
+        SendEW::send_message(message, legislators[receiver]);
     }
 
     void Legislator::handle_message(Message message)
