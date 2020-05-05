@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace http
+namespace paxos
 {
     enum Color
     {

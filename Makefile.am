@@ -74,7 +74,8 @@ EVENTS = \
 
 LEGISLATOR = \
            src/legislator/legislator.cc \
-           src/legislator/legislator-factory.cc
+           src/legislator/legislator-factory.cc \
+           src/legislator/ledger.cc
 
 SOCKET = \
          src/socket/default-socket.cc \

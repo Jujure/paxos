@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace http
+namespace paxos
 {
     void log(std::string str, Color color)
     {
