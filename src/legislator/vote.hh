@@ -1,12 +1,11 @@
 #pragma once
-#include "legislator.hh"
 #include "law/decree.hh"
 
 namespace paxos
 {
     struct Vote
     {
-        Legislator legislator;
+        std::string legislator;
         int ballot_id;
         Decree decree;
     };

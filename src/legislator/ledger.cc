@@ -1,4 +1,5 @@
 #include "ledger.hh"
+#include "legislator.hh"
 #include <fstream>
 #include <filesystem>
 
@@ -27,14 +28,21 @@ namespace paxos
     }
 
 
-    int Ledger::prev_vote()
+    Vote Ledger::prev_vote()
     {
-        return read_file(base_path_ + "prev-vote.txt");
+        Vote v;
+        v.legislator = self->config_.name;
+        v.ballot_id = read_file(base_path_ + "prev-vote-id.txt");
+        Decree decree;
+        decree.decree = read_file(base_path_ + "prev-vote-decree.txt");
+        v.decree = decree;
+        return v;
     }
 
-    void Ledger::set_prev_vote(int v)
+    void Ledger::set_prev_vote(Vote v)
     {
-        write_file(base_path_ + "prev-vote.txt", v);
+        write_file(base_path_ + "prev-vote-id.txt", v.ballot_id);
+        write_file(base_path_ + "prev-vote-decree.txt", v.decree.decree);
     }
 
     int Ledger::next_bal()

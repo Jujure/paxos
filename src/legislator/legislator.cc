@@ -5,6 +5,7 @@
 #include "message/message.hh"
 #include "events/register.hh"
 #include "events/send.hh"
+#include "vote.hh"
 
 namespace paxos
 {
@@ -16,6 +17,7 @@ namespace paxos
 
     void Legislator::initiate_ballot()
     {
+        quorum_previous_votes.clear();
         int new_ballot_number = ledger.last_tried() + 1;
         ledger.set_last_tried(new_ballot_number);
         log(config_.name + " is initiating ballot " + std::to_string(new_ballot_number), cyan);
@@ -55,20 +57,23 @@ namespace paxos
             return;
         }
         ledger.set_next_bal(ballot);
-        int previous_vote = ledger.prev_vote();
+        Vote previous_vote = ledger.prev_vote();
         previous_vote = previous_vote;
         send_last_vote(ballot, previous_vote, sender);
     }
 
-    void Legislator::send_last_vote(int ballot, int previous_vote,
+    void Legislator::send_last_vote(int ballot, Vote previous_vote,
             std::string sender)
     {
         std::string ballot_string = std::to_string(ballot);
-        std::string vote_string = std::to_string(previous_vote);
+        std::string vote_ballot_id_string
+            = std::to_string(previous_vote.ballot_id);
+        std::string decree_string = std::to_string(previous_vote.decree.decree);
         Message message;
         message.set_method("LastVote");
         message.add_header("ballot", ballot_string);
-        message.add_header("vote", vote_string);
+        message.add_header("vote_ballot_id", vote_ballot_id_string);
+        message.add_header("decree", decree_string);
         message.add_header("sender", self->config_.name);
         SendEW::send_message(message, legislators[sender]);
 
@@ -76,22 +81,59 @@ namespace paxos
 
     void Legislator::receive_last_vote(Message message)
     {
-        message = message;
+        std::string ballot_str = *message.get_header("ballot");
+        std::string vote_ballot_id_str = *message.get_header("vote");
+        std::string sender =  *message.get_header("sender");
+        log(config_.name + " has received a LastVote("
+                + ballot_str + ", " + vote_ballot_id_str
+                + ") from " + sender, cyan);
+        int ballot = std::stoi(ballot_str);
+        int vote_ballot_id = std::stoi(vote_ballot_id_str);
+        int vote_decree = std::stoi(*message.get_header("decree"));
+
+        if (ballot != ledger.last_tried())
+            return;
+
+        Decree decree;
+        decree.decree = vote_decree;
+        Vote vote;
+        vote.decree = decree;
+        vote.legislator = sender;
+        vote.ballot_id = vote_ballot_id;
+
+        quorum_previous_votes.insert(std::pair<std::string, Vote>
+                (sender, vote));
+        int nb_legislators = legislators.size();
+        int quorum_size = quorum_previous_votes.size();
+        if (quorum_size > nb_legislators / 2)
+            receive_enough_last_vote();
     }
 
-    void Legislator::receive_enough_last_vote
-        (std::unordered_map<std::string, int> quorum_last_votes)
+    void Legislator::receive_enough_last_vote()
     {
-        quorum_last_votes = quorum_last_votes;
+        Vote max_vote;
+        max_vote.ballot_id = -1;
+        for (auto legislator_vote_pair : quorum_previous_votes)
+        {
+            Vote current_vote = legislator_vote_pair.second;
+            if (current_vote.ballot_id > max_vote.ballot_id)
+                max_vote = current_vote;
+        }
+
         //find d to satisfy B3
         //send BeginBallot to the quorum
     }
 
-    void Legislator::receive_begin_ballot(int ballot, int decree)
+    void Legislator::receive_begin_ballot(int ballot, int decree_id)
     {
         if (ballot != ledger.next_bal())
             return;
-        ledger.set_prev_vote(ballot);
+        Vote vote;
+        vote.ballot_id = ballot;
+        Decree decree;
+        decree.decree = decree_id;
+        vote.decree = decree;
+        ledger.set_prev_vote(vote);
 
         decree = decree;
         //XXX send Voted

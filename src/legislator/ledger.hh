@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "law/decree.hh"
+#include "vote.hh"
 
 namespace paxos
 {
@@ -16,8 +17,8 @@ namespace paxos
         int last_tried();
         void set_last_tried(int b);
 
-        int prev_vote();
-        void set_prev_vote(int v);
+        Vote prev_vote();
+        void set_prev_vote(Vote v);
 
         int next_bal();
         void set_next_bal(int b);
