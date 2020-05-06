@@ -26,7 +26,7 @@ make
 ```
 boost
 autoconf-archive
-A C++ compiler I guess
+A C++17 compiler I guess
 ```
 
 ### Launch

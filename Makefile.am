@@ -35,44 +35,25 @@ bin_PROGRAMS = paxos
 
 
 CONFIG = \
-          src/config/config.hh \
           src/config/config.cc \
-          src/config/parse.hh \
-          src/config/parse.hxx \
           src/config/parse.cc
 
 MISC = \
        src/misc/addrinfo/addrinfo-error.cc \
-       src/misc/addrinfo/addrinfo-error.hh \
-       src/misc/addrinfo/addrinfo-iterator.hh \
        src/misc/addrinfo/addrinfo.cc \
-       src/misc/addrinfo/addrinfo.hh \
        src/misc/fd.cc \
-       src/misc/fd.hh \
-       src/misc/json.hh \
-       src/misc/socket.hh \
-       src/misc/sys-wrapper.hh \
-       src/misc/unistd.hh \
        src/misc/logger.cc \
-       src/misc/logger.hh \
        src/misc/buffer.cc
 
 MESSAGE = \
           src/message/message.cc
 
 EVENTS = \
-          src/events/event-loop.hh \
           src/events/event-loop.cc \
           src/events/events.cc \
-          src/events/events.hh \
-          src/events/listener.hh \
           src/events/listener.cc \
-          src/events/register.hh \
           src/events/register.cc \
-          src/events/register.hxx \
-          src/events/receive.hh \
           src/events/receive.cc \
-          src/events/send.hh \
           src/events/send.cc
 
 LEGISLATOR = \
@@ -82,9 +63,7 @@ LEGISLATOR = \
 
 SOCKET = \
          src/socket/default-socket.cc \
-         src/socket/default-socket.hh \
-         src/connection/connection.cc \
-         src/socket/socket.hh 
+         src/connection/connection.cc
 
 SOURCES = \
           $(CONFIG) \
@@ -97,7 +76,6 @@ SOURCES = \
           $(NULL)
 
 
-# Compile source files again to avoid silenting undefined references.
 paxos_SOURCES = \
                  $(SOURCES) \
                  src/main.cc \
@@ -113,9 +91,6 @@ if USING_CRITERION
 # Criterion rules.
 
 
-#test_queue: tests/test_queue/test_queue.cc src/misc/queue.hh src/misc/queue.hxx
-#	$(CXX) $(AM_CPPFLAGS) -o $@ tests/test_queue/test_queue.cc -lcriterion
-
 #test_%: tests/test_%/test_%.cc 
 #	$(CXX) -o $@ $^ -lcriterion
 
@@ -129,6 +104,3 @@ tap: $(TESTS_UNIT) $(SOURCES)
 		./$$t --tap; \
 	done;
 endif
-
-#debug_queue: tests/test_queue/debug_queue.cc src/misc/queue.hh src/misc/queue.hxx
-#	$(CXX) $(AM_CPPFLAGS) -o $@ tests/test_queue/debug_queue.cc -g
