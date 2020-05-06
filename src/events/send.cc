@@ -25,6 +25,7 @@ namespace paxos
 
         auto buffer = connection_->get_buffer_out();
         std::string response = buffer.to_string();
+        log("Sending a message: ", blue);
 
         log(response, white);
         ssize_t write = 0;
@@ -81,6 +82,7 @@ namespace paxos
         std::string ip = legislator->config_.ip;
         std::string port = legislator->config_.port;
         std::string name = legislator->config_.name;
+        message.add_header("receiver", name);
         shared_socket socket;
         try
         {
@@ -96,6 +98,5 @@ namespace paxos
         message.fill_buffer(connection->get_buffer_out());
 
         event_register.register_event<SendEW>(connection);
-        log("Sending a message to " + name + ": ", blue);
     }
 }

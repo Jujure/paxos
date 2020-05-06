@@ -91,7 +91,9 @@ namespace paxos
         int vote_ballot_id = std::stoi(vote_ballot_id_str);
         int vote_decree = std::stoi(*message.get_header("decree"));
 
-        if (ballot != ledger.last_tried())
+        unsigned int nb_legislators = legislators.size();
+        if (ballot != ledger.last_tried()
+                || quorum_previous_votes.size() > nb_legislators / 2)
             return;
 
         Decree decree;
@@ -103,8 +105,7 @@ namespace paxos
 
         quorum_previous_votes.insert(std::pair<std::string, Vote>
                 (sender, vote));
-        int nb_legislators = legislators.size();
-        int quorum_size = quorum_previous_votes.size();
+        unsigned int quorum_size = quorum_previous_votes.size();
         if (quorum_size > nb_legislators / 2)
             receive_enough_last_vote();
     }
