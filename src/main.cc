@@ -24,9 +24,11 @@ static void sigstop_cb(struct ev_loop*, ev_signal*, int)
 }
 
 
-int main(int, char **argv)
+int main(int argc, char **argv)
 {
-    paxos::ServerConfig server_config = paxos::ServerConfig::parse(argv[1]);
+    if (argc != 3)
+        return 1;
+    paxos::ServerConfig server_config = paxos::ServerConfig::parse(argv);
 
     ev_signal_init(&sigint_watcher, sigint_cb, SIGINT);
     paxos::event_register.get_event_loop().register_sigint_watcher(&sigint_watcher);

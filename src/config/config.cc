@@ -51,8 +51,6 @@ namespace paxos
         config.port = std::to_string(port_int);
 
         safe_get_key(j, "name", config.name, true);
-
-        safe_get_key(j, "self", config.is_self, true);
     }
 
 
@@ -63,7 +61,7 @@ namespace paxos
 
 
     static std::pair<std::vector<LegislatorConfig>, LegislatorConfig>
-        parse_legislators(const json& j)
+        parse_legislators(const json& j, const std::string& name)
     {
         /* Get 'vhosts' value */
         std::vector<json> legislators;
@@ -77,6 +75,7 @@ namespace paxos
         {
             /* Differenciable vhost checking */
             auto legislator = it.get<paxos::LegislatorConfig>();
+            legislator.is_self = name == legislator.name;
             if (!legislator.is_self)
                 legislator_configs.push_back(legislator);
             else
@@ -88,8 +87,11 @@ namespace paxos
     }
 
 
-    ServerConfig ServerConfig::parse(const std::string& path)
+    ServerConfig ServerConfig::parse(char **argv)
     {
+        std::string path = argv[1];
+        std::string name = argv[2];
+
         json json_dict;
         std::ifstream json_file(path);
 
@@ -111,7 +113,7 @@ namespace paxos
             error_and_exit(1, e.what());
         }
 
-        auto legislators = parse_legislators(json_dict);
+        auto legislators = parse_legislators(json_dict, name);
 
         return ServerConfig(legislators.first, legislators.second);
     }

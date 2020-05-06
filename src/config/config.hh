@@ -23,6 +23,6 @@ namespace paxos
 
         LegislatorConfig self_;
 
-        static ServerConfig parse(const std::string& path);
+        static ServerConfig parse(char **argv);
     };
 }

@@ -3,14 +3,17 @@
         {
             "ip" : "127.0.0.1",
             "port" : 8000,
-            "name" : "legislator1",
-            "self" : true
+            "name" : "legislator1"
         },
         {
             "ip" : "127.0.0.1",
             "port" : 8001,
-            "name" : "legislator2",
-            "self" : false
+            "name" : "legislator2"
+        },
+        {
+            "ip" : "127.0.0.1",
+            "port" : 8002,
+            "name" : "legislator3"
         }
     ]
 }
