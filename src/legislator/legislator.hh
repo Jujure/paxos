@@ -40,8 +40,10 @@ namespace paxos
 
         void handle_message(Message message);
 
+    private:
         Ledger ledger;
         std::unordered_map<std::string, Vote> quorum_previous_votes;
+        bool has_started;
 
     };
     using shared_legislator = std::shared_ptr<Legislator>;

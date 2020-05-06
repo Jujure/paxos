@@ -10,13 +10,14 @@
 namespace paxos
 {
     Legislator::Legislator(const LegislatorConfig& config)
-        : config_(config), ledger(config.name)
+        : config_(config), ledger(config.name), has_started(false)
     {
         log("created legislator " + config.name, blue);
     }
 
     void Legislator::initiate_ballot()
     {
+        has_started = false;
         quorum_previous_votes.clear();
         int new_ballot_number = ledger.last_tried() + 1;
         ledger.set_last_tried(new_ballot_number);
@@ -92,8 +93,7 @@ namespace paxos
         int vote_decree = std::stoi(*message.get_header("decree"));
 
         unsigned int nb_legislators = legislators.size();
-        if (ballot != ledger.last_tried()
-                || quorum_previous_votes.size() > nb_legislators / 2)
+        if (ballot != ledger.last_tried() || has_started)
         {
             log("but it was discarded because ballot " + std::to_string(ballot)
                     + " is outdated, it is either no longer in treatment or already started"
@@ -117,6 +117,7 @@ namespace paxos
 
     void Legislator::receive_enough_last_vote()
     {
+        has_started = true;
         int ballot = ledger.last_tried();
         std::string ballot_str = std::to_string(ballot);
 
