@@ -94,7 +94,12 @@ namespace paxos
         unsigned int nb_legislators = legislators.size();
         if (ballot != ledger.last_tried()
                 || quorum_previous_votes.size() > nb_legislators / 2)
+        {
+            log("but it was discarded because ballot " + std::to_string(ballot)
+                    + " is outdated, it is either no longer in treatment or already started"
+                    , red);
             return;
+        }
 
         Decree decree;
         decree.decree = vote_decree;
