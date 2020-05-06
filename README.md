@@ -31,18 +31,18 @@ A C++ compiler I guess
 
 ### Launch
 
-You must then launch the binary by putting a configuration file in argument
+You must then launch the binary by putting a configuration file in argument and a server name
 ```shell=zsh
-./paxos {config}
+./paxos {config} {name}
 ```
 
 ### Configuration
 
 You can find multiple configuration files in the repository already done for you, they are pretty straight forward to understand.
 
-Let's say you want to distribute your system on 2 server, you have to launch 2 instances of the binary each with its configuration file. The configuration file contains informations on all the others servers and also about itself.
-A boolean ("self") in the configuration allows to know if a server corresponds to the actual instance you launched or to a distant server. This boolean must be the only difference in the configuration of all your instances.
-The server with "self" as true, will have its specified ip and port binded for listening, the others are simply the other servers composing your system (which also binded their corresponding ip/port in their respective instances).
+Let's say you want to distribute your system on 2 server, you have to launch 2 instances of the binary each with the same configuration file but each with a distinct name. The configuration file contains informations on all the servers composing the system.
+The second argument you are giving in the command line is the name of the server that THIS instance represents.
+The server with a name equal to the one in the command line, will have its specified ip and port binded for listening, the others are simply the other servers composing your system (which also binded their corresponding ip/port in their respective instances).
 
 
 ### Use
