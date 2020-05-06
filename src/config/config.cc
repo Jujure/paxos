@@ -8,9 +8,8 @@
 namespace paxos
 {
 
-    ServerConfig::ServerConfig(const std::vector<LegislatorConfig>& legislators,
-            const LegislatorConfig& self)
-        : legislators_(legislators), self_(self)
+    ServerConfig::ServerConfig(const std::vector<LegislatorConfig>& legislators)
+        : legislators_(legislators)
     {
     }
 
@@ -60,8 +59,8 @@ namespace paxos
     }
 
 
-    static std::pair<std::vector<LegislatorConfig>, LegislatorConfig>
-        parse_legislators(const json& j, const std::string& name)
+    static std::vector<LegislatorConfig> parse_legislators(const json& j,
+            const std::string& name)
     {
         /* Get 'vhosts' value */
         std::vector<json> legislators;
@@ -69,21 +68,16 @@ namespace paxos
 
         /* Create VHostConfig vector and fill with VHostConfig */
         std::vector<LegislatorConfig> legislator_configs;
-        LegislatorConfig self;
 
         for (auto it : legislators)
         {
             /* Differenciable vhost checking */
             auto legislator = it.get<paxos::LegislatorConfig>();
             legislator.is_self = name == legislator.name;
-            if (!legislator.is_self)
-                legislator_configs.push_back(legislator);
-            else
-                self = legislator;
+            legislator_configs.push_back(legislator);
         }
 
-        return std::pair<std::vector<LegislatorConfig>, LegislatorConfig>
-            (legislator_configs, self);
+        return legislator_configs;
     }
 
 
@@ -115,6 +109,6 @@ namespace paxos
 
         auto legislators = parse_legislators(json_dict, name);
 
-        return ServerConfig(legislators.first, legislators.second);
+        return ServerConfig(legislators);
     }
 }

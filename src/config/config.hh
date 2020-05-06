@@ -16,12 +16,9 @@ namespace paxos
 
     struct ServerConfig
     {
-        ServerConfig(const std::vector<LegislatorConfig>& legislators,
-                const LegislatorConfig& self);
+        ServerConfig(const std::vector<LegislatorConfig>& legislators);
 
         std::vector<LegislatorConfig> legislators_;
-
-        LegislatorConfig self_;
 
         static ServerConfig parse(char **argv);
     };

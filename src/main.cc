@@ -36,11 +36,12 @@ int main(int argc, char **argv)
     ev_signal_init(&sigstop_watcher, sigstop_cb, SIGTSTP);
     paxos::event_register.get_event_loop().register_sigint_watcher(&sigstop_watcher);
 
-    paxos::self = paxos::LegislatorFactory::Create(server_config.self_);
-
     for (auto config : server_config.legislators_)
     {
-        paxos::legislators.insert(std::pair(config.name, paxos::LegislatorFactory::Create(config)));
+        paxos::shared_legislator legislator = paxos::LegislatorFactory::Create(config);
+        paxos::legislators.insert(std::pair(config.name, legislator));
+        if (config.is_self)
+            paxos::self = legislator;
     }
     
     paxos::event_register.get_event_loop()();
