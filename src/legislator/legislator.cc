@@ -120,9 +120,11 @@ namespace paxos
         int ballot = ledger.last_tried();
         std::string ballot_str = std::to_string(ballot);
 
-        log(config_.name + " has received enough LastVote("
+        log("===============================================\n"
+                + config_.name + " has received enough LastVote("
                 + ballot_str + ", v"
-                + ")", green);
+                + ")\n"
+            "===============================================", green);
 
 
         Vote max_vote;
@@ -256,7 +258,9 @@ namespace paxos
     {
         ledger.set_decree(decree);
         std::string new_decree= std::to_string(ledger.get_decree().decree);
-        log("Received success, the new decree is now: " + new_decree, green);
+        log("=======================================\n"
+            "Received success, the new decree is now: " + new_decree +
+            "\n=======================================", green);
     }
 
     void Legislator::handle_message(Message message)
