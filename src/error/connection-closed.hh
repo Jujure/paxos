@@ -12,4 +12,4 @@ namespace paxos
             : std::system_error{errno, std::system_category()}
         {}
     };
-} //namespace http
+} //namespace paxos

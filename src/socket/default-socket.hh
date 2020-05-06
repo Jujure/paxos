@@ -46,4 +46,4 @@ namespace paxos
 
         void connect(const sockaddr*, socklen_t) final;
     };
-} // namespace http
+} // namespace paxos

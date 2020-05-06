@@ -186,4 +186,4 @@ namespace paxos
     };
 
     using shared_socket = std::shared_ptr<Socket>;
-} // namespace http
+} // namespace paxos

@@ -93,6 +93,6 @@ namespace paxos
      * \brief Service object.
      */
     extern EventWatcherRegistry event_register;
-} // namespace http
+} // namespace paxos
 
 #include "events/register.hxx"

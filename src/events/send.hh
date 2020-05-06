@@ -32,4 +32,4 @@ namespace paxos
         shared_connection connection_;
     };
 
-} // namespace http
+} // namespace paxos

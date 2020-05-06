@@ -72,4 +72,4 @@ namespace paxos
          */
         ev_io watcher_;
     };
-} // namespace http
+} // namespace paxos

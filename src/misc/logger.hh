@@ -17,4 +17,4 @@ namespace paxos
     };
 
     void log(std::string str, Color color);
-} // namespace http
+} // namespace paxos

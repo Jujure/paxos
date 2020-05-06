@@ -12,4 +12,4 @@ namespace paxos
         {}
         virtual ~ParsingError() = default;
     };
-} // namespace http
+} // namespace paxos

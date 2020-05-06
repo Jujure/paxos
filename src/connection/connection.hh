@@ -73,4 +73,4 @@ namespace paxos
     };
 
     using shared_connection = std::shared_ptr<Connection>;
-} // namespace http
+} // namespace paxos

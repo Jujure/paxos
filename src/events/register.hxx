@@ -15,4 +15,4 @@ namespace paxos
 
         return ew;
     }
-} // namespace http
+} // namespace paxos

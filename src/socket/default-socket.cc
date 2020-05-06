@@ -78,4 +78,4 @@ namespace paxos
     }
 
     // Implement all other methods (see header).
-} // namespace http
+} // namespace paxos

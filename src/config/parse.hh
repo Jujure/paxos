@@ -7,6 +7,6 @@ namespace paxos
 {
     [[noreturn]] void error_and_exit(int code, const std::string& error);
 
-} // namespace http
+} // namespace paxos
 
 #include "parse.hxx"

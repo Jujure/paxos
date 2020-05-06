@@ -92,4 +92,4 @@ namespace paxos
         struct ev_loop* loop;
     };
 
-} // namespace http
+} // namespace paxos

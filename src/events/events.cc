@@ -17,4 +17,4 @@ namespace paxos
         auto shared_ew = event_register.at(ew).value();
         (*shared_ew)();
     }
-} // namespace http
+} // namespace paxos

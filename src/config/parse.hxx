@@ -29,4 +29,4 @@ namespace paxos
         return 1;
     }
 
-} // namespace http
+} // namespace paxos

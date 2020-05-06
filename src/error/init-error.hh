@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace http
+namespace paxos
 {
     struct InitializationError : public std::logic_error
     {
@@ -12,4 +12,4 @@ namespace http
         {}
         virtual ~InitializationError() = default;
     };
-} // namespace http
+} // namespace paxos

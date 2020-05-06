@@ -9,4 +9,4 @@ namespace paxos
         exit(code);
     }
 
-} // namespace http
+} // namespace paxos

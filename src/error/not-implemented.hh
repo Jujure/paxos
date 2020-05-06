@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace http
+namespace paxos
 {
     class NotImplemented : public std::logic_error
     {
@@ -12,4 +12,4 @@ namespace http
         {}
         virtual ~NotImplemented() = default;
     };
-} // namespace http
+} // namespace paxos

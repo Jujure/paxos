@@ -36,4 +36,4 @@ namespace paxos
          */
         uint16_t port_;
     };
-} // namespace http
+} // namespace paxos

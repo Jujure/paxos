@@ -8,4 +8,4 @@ namespace paxos
     {
         std::cout << "\033[1;" + std::to_string(color) + "m" + str + "\033[0m\n";
     }
-} // namespace http
+} // namespace paxos
