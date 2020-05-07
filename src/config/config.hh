@@ -12,6 +12,8 @@ namespace paxos
         std::string port;
         std::string name;
         bool is_self;
+
+        int ballot_partition_id;
     };
 
     struct ServerConfig

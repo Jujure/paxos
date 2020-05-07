@@ -68,13 +68,16 @@ namespace paxos
 
         /* Create VHostConfig vector and fill with VHostConfig */
         std::vector<LegislatorConfig> legislator_configs;
+        int i = 0;
 
         for (auto it : legislators)
         {
             /* Differenciable vhost checking */
             auto legislator = it.get<paxos::LegislatorConfig>();
+            legislator.ballot_partition_id = i;
             legislator.is_self = name == legislator.name;
             legislator_configs.push_back(legislator);
+            ++i;
         }
 
         return legislator_configs;
