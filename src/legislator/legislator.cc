@@ -96,7 +96,12 @@ namespace paxos
     {
         int last_tried = ledger.last_tried();
         if (last_tried > ballot)
+        {
+            log("But it was discarded because an higher ballot ("
+                    + std::to_string(last_tried) + ") as been found before", red);
+
             return;
+        }
 
         while (last_tried + (int)legislators.size() < ballot)
         {
