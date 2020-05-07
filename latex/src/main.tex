@@ -1,6 +1,8 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
+\usepackage{code}
+\usepackage{amssymb}
 
 \title{Paxos made moderately working}
 \date{May 2020}
@@ -11,5 +13,142 @@
 \pagebreak
 
 \section{Introduction}
+Distributed systems theory is really a troublesome field.\\
+The main idea is that we want a set of multiple computers to behave like there was only one.\\
+For example, we want our database to be split among multiple machines to avoid things like data losses, service interruption, server overload, storage issues and many other fun problems. Basically we want to improve the performances of a system by getting it to run on multiple machines.\\
+This implies that all the machines composing our system needs to stay synchronized.\\
+There are 3 main components that we want to maintain:
+\begin{itemize}
+    \item Consistency: every machines in the system as to agree with each other, you would not want a database that doesn't respond the same thing depending on the actual machine that received the request.
+    \item Availability: I want my system to be always able to respond, I don't want service interruptions
+    \item Partition tolerance: This is a tricky one but basically I want my system to work as intended even if some machines are separated from each other (when a partition occurs). For example if I have 3 machines (A, B and C) in my system, and it turns out that A and B can access each other but can no longer access C (but C is still up, it is just not accessible), then a partition occured and I don't want my system to diverge on the two sides of the partition because they are not able to communicate.
+\end{itemize}
+
+This looks really interesting but one of the first theorem you will learn while working on distributed systems is that it is impossible to maintain these 3 components at once.\\
+Many algorithms have addressed this issue by making concessions. They are also many paper that explains the problems in further details as well as adding other ones (Byzantine generals, FLP ...) but we will not talk about these.\\
+We will talk about one legendary algorithm called Paxos, described in \href{https://lamport.azurewebsites.net/pubs/lamport-paxos.pdf}{The Part-Time Parliament}.\\
+This algorithm is known for being really hard to understand but also because its original research paper tells a story to describe the algorithm.\\
+I really wanted to understand this algorithm, so I reimplemented it in C++.\\
+You can find the code \href{https://github.com/Azomasiel/paxos}{here}.\\
+The present article acts as a guide to navigate between the implementation and the original paper.
+\pagebreak
+
+\section{Consistency and progress condition}
+We will first talk of the key parts of the algorithm and how they are presented in the paper.\\
+The author created a a fictionnal civilisation on the island of Paxos to tell his story. The culture of the paxons (residents of Paxos) is really particular because they have the bad habit of leaving whatever they are doing to do their personnal activities.\\
+Even the legislators in the parliament could leave in the middle of a vote. Yet paxons had laws, and those laws had to be written somewhere after being voted. How could the legislators agree with each other on the current state of the law, and how could they create a new law?\\
+These two problems are respectively called the "Consistency" and "Progress" conditions in the paper.\\
+Of course, this is an image for a distributed system. The system is the parliament and each legislator is a machine. The fact that a legislator might leave the parliament for his personnal activities represents the fact that the machine either crashed or is not accessible anymore. Yet, each legislator had to know all the laws in place at the current time and must be able to vote for a new one.\\
+The authors then describes how paxons represented the law. The law is defined by a sequence of numbered decree, for example:
+
+\begin{itemize}
+    \item 132: Lamps must use only olive oil
+    \item 155: The olive tax is 3 drachmas per ton
+\end{itemize}
+
+To record the law, one might want to hire a secretary to register every decree, but in Paxos no one was willing to act as a secretary and stay in parliament for the entire session.\\
+Instead, each legislator kept a ledger containing the decrees that were passed. Each legislator had its own version of the law.\\
+
+We can now better rephrase the consistency condition stated earlier: No two ledgers can contain contradictory information. It means that if a legislator has the decree 132 in the above example, no other legislator can have a different entry for decree 132.\\
+However, it was possible for a legislator to not have any entry for decree 132, for example if he didn't learned about it yet.\\
+Of course, the consitency condition could be trivially fulfilled by leaving every ledger blank so we needed the progress condition.\\
+In paxos, an atmosphere of mutual trust prevalled, it means that legislators were willing to accept any decree proposed by any other legislator.\\
+This might cause some consistency issues. For example, a group of legislators pass the decree \textbf{37: Painting on temple walls is forbidden}. And then leave the parliament before another group of legislators enters and pass (without knowing anythin about the previously passed decree) the decree \textbf{37: Freedom of artistic expression is guaranteed}.\\
+To solve this, we need at least one legislator in the first group to also be in the second, so he can warn them that this decree number already exists.\\
+To make sure that any two groups of legislators have at least one legislator in common, we simply need to make sure that both of them are a majority. This means that a decree can only be passed if a majority of legislators are in the parliament.
+This guarantee allows to define the progress condition as follow:
+If a majority of the legislators were in the parliament, then any decree proposed by a legislator in the the parliament would be passed and every decree that had been passed would appear in the ledger of every legislator in the parliament.\\
+
+We now need to maintain those 2 conditions.
+
+\section{Assumptions}
+The article then states a few assumptions for the organisation of the parliament.\\
+First, every legislators has a personnal ledger, in which they write decrees.\\
+This ledger represents any kind of persistent data storage, in our implementaion, it will simply be a file, but it could an actual database.\\
+It is stated that legislator could take notes at the back of their ledgers to not forget what they were doing after leaving the parliament. We will also use files for this matter, we will use them to keep track of data relative to the algorithm that MUST NOT be lost uppon crashes.\\
+Legislators would write other notes on a slip of paper which he might (or not) lose uppon leaving the parliament. This represents simple memory storage.\\
+Legislators had an hourglass to measure time, it means that our servers must have internal clocks, in our implementation we will not use them as the complete protocol requires because it isn't usefull in the case where we are initiating decrees manually (which we do in our implementation).\\
+
+It is then specified that the parliament had bad acoustics, the only way for legisltors to communicate was to send messengers. Messengers could leave the parliament for personnal activities the same way legislators did. It means that our machines cannot have direct inter-process communication, we will here use TCP connections.
+The application layer of our message will be further detailed when will talk of the protocol.
+
+\section{Design concerns}
+Let's put the basis of our implementation, we will only detail here what is relevant for the protocl, all the socket, events or configuration isn't interesting here so we will only focus on the protocol in itself by making abstraction of everything else.
+
+\subsection{Legislator class}
+Let's build our first class, the Legislator, as stated in the assumptions it contains a ledger and some volatile data for the algorithm but we do not know them yet.
+\begin{code}
+class Legislator
+{
+public:
+    Legislator(const LegislatorConfig& config);
+    LegislatorConfig config_;
+
+private:
+    Ledger ledger;
+};
+using shared_legislator = std::shared_ptr<Legislator>;
+
+extern shared_legislator self;
+extern std::unordered_map<std::string, shared_legislator> legislators;
+
+\end{code}
+
+The LegislatorConfig simply hold the ip and port of the server, as well as a name to identify it.\\
+Legislator are created with the factory design pattern using a configuration file, it simply contains configurations of all the legislators in the parliament.\\
+The name of the legislator currently running is given via the command line.\\
+So if you want to simulate a parliament with 2 legislators, you need to the program twice with the same configuration file, but by putting a different name (that must be both present in the configuration file).
+There is nothing really worth noting in the Ledger class, it simply contains a bunch of methods to retrieve data (for example decrees).\\
+You will also notice 2 global variables, a map between the name of the legislator and the legislator itself, and a pointer to the legislator that corresponds to that particular machine.\\
+
+We will add a lot of methods in this class, it is really our central point.
+
+\subsection{Decree class}
+We then have the Decree class.\\
+It is simply a value object containing an int. The decree will only be an int here.
+
+\pagebreak
+\section{The single-decree synod}
+\subsection{Mathematical results}
+We now have everything we need to start the algorithm, the paper presents it in 2 steps.\\
+First there is the single-decree synod protocol and then the multi-decree parliament protocol which directly derives from the first.
+The single-decree protocol is itself a derivation of multiple sub-protocols. There is first the preliminary protocol, that is the mathematical basis of the algorithm, then the basic protocol that derives directly from it that respects the consistency condition and then the complete protocol that adds the progress condition.
+
+The goal of the single-decree protocol is to synchronize a single decree between all our legislators. It is worth to note that the proposed implemention is actually only the basic single-decree protocol, the multi-decree part is yet to be done and the complete single-decree protocol is irrelevant in our implementation.
+
+
+The decree is chosen through a series of numbered ballots.\\
+A ballot is simply a referendum on a single decree, in each ballot each legislator has the choice to either vote or to not vote for the decree.\\
+To each ballot was associate a non-empty set of legislators called the quorum, the ballot succeeded (and the decree was passed) if and only if every legislator in the quorum voted for it.
+A ballot B is said to be earlier than a ballot C if B's ballot number is inferior to C's.
+
+Let's now consider a set ${\beta}$ of ballots, we will see that by adding a few conditions, once a ballot has succeeded, every later ballots will be fore the same decree, thus satisfying the consistency condition.
+
+The consistency condition is satisfied if:
+\begin{itemize}
+    \item $B1(\beta)$: Each ballot in $\beta$ has a unique ballot number
+    \item $B2(\beta)$: The quorum of any two ballots in $\beta$ have at least one legislator in common
+    \item $B3(\beta)$: For every ballot B in $\beta$, if any legislator in B's quorum voted in an earlier ballot in $\beta$, then the decree of B equals the decree of the latest of those earlier ballots
+\end{itemize}
+
+Rather than going into the maths of why this works I will try to build a strong intuition of this.
+
+So let's consider ballot B with number 4 for decree D. Given the success of B, every legislators in B's quorum voted for it by definition of a successful ballot.\\
+Let's now consider ballot C with number 5 whose decree is yet to be determined. C's quorum contains at least one legislator in common with B's quorum (because of $B2(\beta)$).\\
+Since every legislator in B's quorum voted in B for decree D, we can immediatly deduct that at least one legislator in C's quorum previously voted in B for decree D. B being the earliest ballot before C, the decree of C MUST be D to satisfie $B3(\beta)$
+
+\subsection{The basic protocol}
+We can derive a protocol from the requirement that $B1(\beta)-B3(\beta)$ remain true where $\beta$ is the set of all ballots that were or are being conducted.\\
+Each legislator could initiate a ballot by choosing its number, decree and quorum. The choice derive directly from the need to maintain $B1(\beta)-B3(\beta)$.
+
+To maintain $B1(\beta)$, each ballot needs to receive a unique number. A legislator can take notes in his ledger to remember of which ballot he already initiated to avoid picking the same number twice. To avoid two different legislators from initiating ballots with the same number, the set of possible ballot number is partitionned among the legislators. There are multiple way of doing this, in our implementation we give ballot numbers to legislators following a round-robin basis.\\
+If we have 3 legislators (A, B and C), legislator A will have ballot numbers 0, 3, 6 ...\\
+legislator B will have 1, 4, 5 ... and legislator C will have 2, 5, 8 ...
+
+To maintain $B2(\beta)$ we can simply choose the quorum as any majority set among the legislators.\\
+
+$B3(\beta)$
+
+\subsection{The complete protocol}
 
 \end{document}
