@@ -16,7 +16,7 @@ namespace paxos
         LegislatorConfig config_;
 
         void initiate_ballot();
-        int get_next_ballot_id(int previous_ballot_id);
+        int get_next_ballot_id();
 
         void send_next_ballot(int ballot);
         void receive_next_ballot(Message message);

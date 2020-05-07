@@ -19,16 +19,20 @@ namespace paxos
     {
         has_started = false;
         quorum_previous_votes.clear();
-        int new_ballot_number = get_next_ballot_id(ledger.last_tried());
+        int new_ballot_number = get_next_ballot_id();
         ledger.set_last_tried(new_ballot_number);
         log(config_.name + " is initiating ballot " + std::to_string(new_ballot_number), green);
         send_next_ballot(new_ballot_number);
     }
 
-    int Legislator::get_next_ballot_id(int previous_ballot_id)
+    int Legislator::get_next_ballot_id()
     {
+        int previous_ballot_id = ledger.last_tried();
         if (previous_ballot_id == -1)
-            return config_.ballot_partition_id;
+            previous_ballot_id = config_.ballot_partition_id - legislators.size();
+        int last_voted_ballot = ledger.next_bal();
+        while (last_voted_ballot > (int)legislators.size() + previous_ballot_id)
+            previous_ballot_id += legislators.size();
         return previous_ballot_id + legislators.size();
     }
 
