@@ -66,12 +66,42 @@ namespace paxos
             log("but it was discarded because ballot " + std::to_string(ballot)
                     + " is inferior or equal to nextBallot "
                     + std::to_string(next_ballot), red);
+            send_higher_ballot(next_ballot, sender);
             return;
         }
         ledger.set_next_bal(ballot);
         Vote previous_vote = ledger.prev_vote();
         previous_vote = previous_vote;
         send_last_vote(ballot, previous_vote, sender);
+    }
+
+    void Legislator::send_higher_ballot(int ballot, std::string receiver)
+    {
+        Message message;
+        message.set_method("HigherBallot");
+        message.add_header("ballot", std::to_string(ballot));
+        SendEW::send_message(message, legislators[receiver]);
+    }
+
+    void Legislator::receive_higher_ballot(Message message)
+    {
+        std::string ballot_str = *message.get_header("ballot");
+        log(config_.name + " has received a HigherBallot("
+                + ballot_str + ")", red);
+
+        receive_higher_ballot(std::stoi(ballot_str));
+    }
+
+    void Legislator::receive_higher_ballot(int ballot)
+    {
+        int last_tried = ledger.last_tried();
+
+        while (last_tried + (int)legislators.size() < ballot)
+        {
+            last_tried += legislators.size();
+        }
+        ledger.set_last_tried(last_tried);
+        initiate_ballot();
     }
 
     void Legislator::send_last_vote(int ballot, Vote previous_vote,
@@ -193,8 +223,13 @@ namespace paxos
     void Legislator::receive_begin_ballot(int ballot, int decree_id,
             std::string sender)
     {
-        if (ballot != ledger.next_bal())
+        int next_ballot = ledger.next_bal();
+        if (ballot != next_ballot)
+        {
+            if (ballot < next_ballot)
+                send_higher_ballot(next_ballot, sender);
             return;
+        }
         Vote vote;
         vote.ballot_id = ballot;
         Decree decree;
@@ -288,5 +323,7 @@ namespace paxos
             receive_voted(message);
         else if (method == "Success")
             receive_success(message);
+        else if (method == "HigherBallot")
+            receive_higher_ballot(message);
     }
 }

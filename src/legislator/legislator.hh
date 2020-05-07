@@ -22,6 +22,10 @@ namespace paxos
         void receive_next_ballot(Message message);
         void receive_next_ballot(int ballot, std::string sender);
 
+        void send_higher_ballot(int ballot, std::string receiver);
+        void receive_higher_ballot(Message message);
+        void receive_higher_ballot(int ballot);
+
         void send_last_vote(int ballot, Vote previous_vote, std::string sender);
         void receive_last_vote(Message message);
         void receive_enough_last_vote();
