@@ -95,6 +95,8 @@ namespace paxos
     void Legislator::receive_higher_ballot(int ballot)
     {
         int last_tried = ledger.last_tried();
+        if (last_tried > ballot)
+            return;
 
         while (last_tried + (int)legislators.size() < ballot)
         {
