@@ -143,11 +143,11 @@ Each legislator could initiate a ballot by choosing its number, decree and quoru
 
 To maintain $B1(\beta)$, each ballot needs to receive a unique number. A legislator can take notes in his ledger to remember of which ballot he already initiated to avoid picking the same number twice. To avoid two different legislators from initiating ballots with the same number, the set of possible ballot number is partitionned among the legislators. There are multiple way of doing this, in our implementation we give ballot numbers to legislators following a round-robin basis.\\
 If we have 3 legislators (A, B and C), legislator A will have ballot numbers 0, 3, 6 ...\\
-legislator B will have 1, 4, 5 ... and legislator C will have 2, 5, 8 ...
+legislator B will have 1, 4, 7 ... and legislator C will have 2, 5, 8 ...
 
 To maintain $B2(\beta)$ we can simply choose the quorum as any majority set among the legislators.\\
 
-$B3(\beta)$
+$B3(\beta)$ requires that the legislator initiating the ballot knows the decree every legislators in the quorum voted for. To do this will have to exchange messages
 
 \subsection{The complete protocol}
 

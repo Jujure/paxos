@@ -2,6 +2,7 @@
 #include <unordered_map>
 
 #include "misc/buffer.hh"
+#include "legislator/legislator.hh"
 
 namespace paxos
 {
@@ -63,6 +64,8 @@ namespace paxos
         void set_method(std::string method);
 
         void fill_buffer(misc::Buffer& buffer);
+
+        void send(shared_legislator receiver);
 
     protected:
         std::string method_;

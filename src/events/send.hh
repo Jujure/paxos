@@ -26,8 +26,6 @@ namespace paxos
          */
         void operator()() final;
 
-        static void send_message(Message message, shared_legislator legislator);
-
     private:
         shared_connection connection_;
     };

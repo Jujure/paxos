@@ -1,7 +1,6 @@
 #pragma once
 #include "config/config.hh"
 #include "ledger.hh"
-#include "message/message.hh"
 #include "vote.hh"
 #include "law/decree.hh"
 #include <unordered_map>
@@ -9,6 +8,7 @@
 
 namespace paxos
 {
+    class Message;
     class Legislator
     {
     public:

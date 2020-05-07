@@ -2,7 +2,6 @@
 
 #include "legislator.hh"
 #include "misc/logger.hh"
-#include "message/message.hh"
 #include "events/register.hh"
 #include "events/send.hh"
 #include "vote.hh"
@@ -45,7 +44,7 @@ namespace paxos
         message.add_header("sender", self->config_.name);
 
         for (auto legislator : legislators)
-            SendEW::send_message(message, legislator.second);
+            message.send(legislator.second);
     }
 
     void Legislator::receive_next_ballot(Message message)
@@ -80,7 +79,7 @@ namespace paxos
         Message message;
         message.set_method("HigherBallot");
         message.add_header("ballot", std::to_string(ballot));
-        SendEW::send_message(message, legislators[receiver]);
+        message.send(legislators[receiver]);
     }
 
     void Legislator::receive_higher_ballot(Message message)
@@ -124,7 +123,7 @@ namespace paxos
         message.add_header("vote_ballot_id", vote_ballot_id_string);
         message.add_header("decree", decree_string);
         message.add_header("sender", self->config_.name);
-        SendEW::send_message(message, legislators[sender]);
+        message.send(legislators[sender]);
 
     }
 
@@ -208,7 +207,7 @@ namespace paxos
         for (auto legislator_vote_pair : quorum_previous_votes)
         {
             std::string legislator = legislator_vote_pair.first;
-            SendEW::send_message(message, legislators[legislator]);
+            message.send(legislators[legislator]);
         }
     }
 
@@ -254,7 +253,7 @@ namespace paxos
         message.add_header("ballot", std::to_string(ballot));
         message.add_header("sender", self->config_.name);
         message.add_header("decree", std::to_string(decree.decree));
-        SendEW::send_message(message, legislators[receiver]);
+        message.send(legislators[receiver]);
     }
 
     void Legislator::receive_voted(Message message)
@@ -297,7 +296,7 @@ namespace paxos
         message.add_header("decree", std::to_string(decree.decree));
 
         for (auto legislator : legislators)
-            SendEW::send_message(message, legislator.second);
+            message.send(legislator.second);
     }
 
     void Legislator::receive_success(Message message)
