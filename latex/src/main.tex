@@ -15,7 +15,7 @@
 \section{Introduction}
 Distributed systems theory is really a troublesome field.\\
 The main idea is that we want a set of multiple computers to behave like there was only one.\\
-For example, we want our database to be split among multiple machines to avoid things like data losses, service interruption, server overload, storage issues and many other fun problems. Basically we want to improve the performances of a system by getting it to run on multiple machines.\\
+For example, we want our database to be split among multiple machines to avoid issues like data losses, service interruption, server overload, storage issues and many other fun problems. Basically we want to improve the performances of a system by getting it to run on multiple machines.\\
 This implies that all the machines composing our system needs to stay synchronized.\\
 There are 3 main components that we want to maintain:
 \begin{itemize}
@@ -35,7 +35,7 @@ The present article acts as a guide to navigate between the implementation and t
 
 \section{Consistency and progress condition}
 We will first talk of the key parts of the algorithm and how they are presented in the paper.\\
-The author created a a fictionnal civilisation on the island of Paxos to tell his story. The culture of the paxons (residents of Paxos) is really particular because they have the bad habit of leaving whatever they are doing to do their personnal activities.\\
+The author created a fictionnal civilisation on the island of Paxos to tell his story. The culture of the paxons (residents of Paxos) is really particular because they have the bad habit of leaving whatever they are doing to do their personnal activities.\\
 Even the legislators in the parliament could leave in the middle of a vote. Yet paxons had laws, and those laws had to be written somewhere after being voted. How could the legislators agree with each other on the current state of the law, and how could they create a new law?\\
 These two problems are respectively called the "Consistency" and "Progress" conditions in the paper.\\
 Of course, this is an image for a distributed system. The system is the parliament and each legislator is a machine. The fact that a legislator might leave the parliament for his personnal activities represents the fact that the machine either crashed or is not accessible anymore. Yet, each legislator had to know all the laws in place at the current time and must be able to vote for a new one.\\
